@@ -16,8 +16,8 @@
   --radius-lg: 28px;
   --radius-md: 20px;
   --radius-sm: 14px;
-  --sans: Inter, 'Segoe UI', system-ui, sans-serif;
-  --heading: 'Aptos Display', 'Segoe UI', system-ui, sans-serif;
+  --sans: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  --heading: 'Outfit', 'Segoe UI', system-ui, sans-serif;
   --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
 
   color: var(--text);

@@ -1145,6 +1145,13 @@ tbody tr:hover {
 @media(max-width:1050px){.operator-welcome,.operator-overview-grid,.ask-layout{grid-template-columns:1fr}.ask-help{position:static}}
 @media(max-width:650px){.operator-welcome{padding:22px}.operator-request{grid-template-columns:6px 1fr}.operator-request .status-badge{grid-column:2;justify-self:start}.operator-welcome-actions>*{width:100%}.sla-card{align-items:flex-start}}
 
+.operator-welcome h2 {
+  max-width: 620px;
+  font-size: clamp(1.75rem, 2.6vw, 2.65rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
 .panel,.stat-card,.role-card,.archive-card,.question-card,.workflow-step,.profile-metrics article,.dashboard-stats article {
   transition: transform .25s ease, border-color .25s ease, background-color .25s ease, box-shadow .25s ease;
 }

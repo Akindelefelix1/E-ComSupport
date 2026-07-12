@@ -37,7 +37,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding-inline: clamp(28px, 5vw, 64px) !important;
+  padding-inline: clamp(18px, 2.25vw, 32px) !important;
   background: #07101e url('/hero-support-owner-v2.png') center / cover no-repeat !important;
 }
 
@@ -57,13 +57,13 @@
 
 .app-shell > main > section,
 .app-shell > main > .site-footer {
-  padding-inline: clamp(28px, 5vw, 64px) !important;
+  padding-inline: clamp(18px, 2.25vw, 32px) !important;
 }
 
 @media (max-width: 560px) {
   .landing-hero {
     background-position: 64% center;
-    padding-inline: 20px !important;
+    padding-inline: 14px !important;
   }
 
   .landing-hero::after {
@@ -72,7 +72,7 @@
 
   .app-shell > main > section,
   .app-shell > main > .site-footer {
-    padding-inline: 20px !important;
+    padding-inline: 14px !important;
   }
 }
 
@@ -148,7 +148,7 @@ img {
 }
 
 .app-shell {
-  width: min(1440px, calc(100% - 20px));
+  width: min(1440px, calc(100% - 12px));
   margin: 0 auto;
   padding: 20px 0 48px;
 }

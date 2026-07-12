@@ -6,7 +6,7 @@ import { archiveEntries, initialQuestions, sampleThread } from '../data/platform
 
 const tabs = [{ id: 'overview', label: 'Overview' }, { id: 'ask', label: 'Ask a question' }, { id: 'questions', label: 'My questions' }, { id: 'archive', label: 'Solution archive' }, { id: 'notifications', label: 'Notifications' }, { id: 'profile', label: 'My profile' }]
 
-export function OperatorDashboard({ user, onLogout }) {
+export function OperatorDashboard({ user, onLogout, onSwitchView }) {
   const [tab, setTab] = useState('overview')
   const [questions, setQuestions] = useState(initialQuestions)
   const [view, setView] = useState('table')
@@ -29,7 +29,7 @@ export function OperatorDashboard({ user, onLogout }) {
   const saveProfile = (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); setProfile((current) => ({ ...current, name: data.get('name').trim(), store: data.get('store').trim(), platform: data.get('platform'), timezone: data.get('timezone'), bio: data.get('bio').trim() })); setProfileOpen(false); setFeedback({ title: 'Profile updated', message: 'Your personal and store information was saved successfully.' }) }
   const filtered = archive.filter((item) => (item.title + item.answer).toLowerCase().includes(search.toLowerCase()) && (category === 'All' || item.category === category))
 
-  return <DashboardLayout user={user} onLogout={onLogout} title={tab === 'overview' ? `Good day, ${user.name}` : tabs.find((item) => item.id === tab).label} subtitle="Get clear help and track every request." tabs={tabs} activeTab={tab} onTabChange={setTab}>
+  return <DashboardLayout user={user} onLogout={onLogout} onSwitchView={onSwitchView} title={tab === 'overview' ? `Good day, ${user.name}` : tabs.find((item) => item.id === tab).label} subtitle="Get clear help and track every request." tabs={tabs} activeTab={tab} onTabChange={setTab}>
     {tab === 'overview' && <>
       <section className="operator-welcome"><div><span className="operator-kicker">Your support command center</span><h2>What can we help you solve today?</h2><p>Post a problem in plain language and a verified expert will guide you toward a clear solution.</p><div className="operator-welcome-actions"><button className="primary-button" onClick={() => setTab('ask')}>Ask a new question</button><button className="secondary-button" onClick={() => setTab('archive')}>Search solved issues</button></div></div><div className="sla-card"><span className="sla-icon" aria-hidden="true">24h</span><div><strong>No question ignored</strong><p>Requests without a response are escalated within 24 hours.</p></div></div></section>
       <div className="dashboard-stats operator-stats"><article><span>Open questions</span><strong>{questions.filter((q) => q.status !== 'Resolved').length}</strong><small>Currently being tracked</small></article><article><span>Expert responses</span><strong>{questions.reduce((sum, q) => sum + q.responses, 0)}</strong><small>Across your requests</small></article><article><span>Resolved</span><strong>{questions.filter((q) => q.status === 'Resolved').length + 12}</strong><small>Solutions saved for you</small></article></div>

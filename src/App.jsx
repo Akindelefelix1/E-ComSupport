@@ -5,8 +5,9 @@ import { AuthPage } from './pages/AuthPage.jsx'
 import { OperatorDashboard } from './pages/OperatorDashboard.jsx'
 import { ExpertDashboard } from './pages/ExpertDashboard.jsx'
 import { AdminDashboard } from './pages/AdminDashboard.jsx'
+import { GiveHelpPage } from './pages/GiveHelpPage.jsx'
 
-const routes = ['/', '/login', '/signup', '/operator', '/expert', '/admin']
+const routes = ['/', '/give-help', '/login', '/signup', '/operator', '/expert', '/admin']
 
 function readRoute() {
   const route = window.location.hash.slice(1) || '/'
@@ -43,6 +44,7 @@ function App() {
   }
 
   if (route === '/') return <LandingPage navigate={navigate} session={session} />
+  if (route === '/give-help') return <GiveHelpPage navigate={navigate} />
 
   if (!session || route !== `/${session.role}`) {
     return <AuthPage mode="login" onAuthenticate={authenticate} navigate={navigate} notice="Please log in with the correct role to access that dashboard." />

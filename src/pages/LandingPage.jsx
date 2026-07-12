@@ -1,41 +1,22 @@
-import { useEffect } from 'react'
 import { AppHeader } from '../components/AppHeader.jsx'
-import { operatorStats, roleCards, workflowSteps } from '../data/platformData.js'
-import supportJourney from '../assets/support-journey-hero.png'
-import verifiedExperts from '../assets/verified-experts.png'
-import solutionArchive from '../assets/solution-archive.png'
-import { FeatureIcon } from '../components/FeatureIcon.jsx'
+import { workflowSteps } from '../data/platformData.js'
+
+function ProductMockup({ type }) {
+  const content = {
+    question: <><span className="mock-label">What do you need help with?</span><b>Checkout button not working</b><i/><span className="mock-label">Category</span><em>Checkout</em><button>Submit question</button></>,
+    response: <><span className="mock-status">Verified response</span><b>Maya R. · Checkout specialist</b><p>Check the overlay layer on the mobile breakpoint. It may be blocking the button.</p><span className="mock-accepted">✓ Accepted solution</span></>,
+    archive: <><div className="mock-search">⌕ Search solved questions</div><em>Checkout</em><b>Fix for a missing checkout button</b><p>Accepted answer · 48 helpful votes</p><b>Payment email delayed after checkout</b></>,
+  }
+  return <div className={`product-mockup ${type}`} aria-hidden="true"><div className="browser-bar"><i/><i/><i/></div><div className="mock-content">{content[type]}</div></div>
+}
 
 export function LandingPage({ navigate, session }) {
-  useEffect(() => {
-    const elements = document.querySelectorAll('[data-reveal]')
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible')
-          observer.unobserve(entry.target)
-        }
-      })
-    }, { threshold: 0.16, rootMargin: '0px 0px -50px' })
-    elements.forEach((element) => observer.observe(element))
-    return () => observer.disconnect()
-  }, [])
-
-  return <div className="app-shell"><a className="skip-link" href="#main-content">Skip to content</a><AppHeader navigate={navigate} />
-    <main id="main-content">
-      <section className="hero landing-hero panel"><div className="hero-copy"><p className="eyebrow">Support that never leaves you waiting</p><h2>Real e-commerce problems. Verified people. Clear answers.</h2><p className="hero-text">A welcoming technical support community for independent store owners—built around accountable experts and solutions that stay useful.</p><div className="hero-actions">{session ? <button className="primary-button" onClick={() => navigate(`/${session.role}`)}>Open my dashboard</button> : <><button className="primary-button" onClick={() => navigate('/signup')}>Create free account</button><button className="secondary-button" onClick={() => navigate('/login')}>Log in</button></>}</div></div><figure className="hero-visual"><img src={supportJourney} alt="A store owner with a checkout problem connects with verified support experts who help resolve it successfully" /><figcaption><span>Problem identified</span><span>Verified expert matched</span><span>Solution confirmed</span></figcaption></figure><div className="stat-grid hero-stats" aria-label="Platform highlights">{operatorStats.map((item) => <article className="stat-card" key={item.label}><strong>{item.value}</strong><span>{item.label}</span></article>)}</div></section>
-      <section id="roles" className="section-block reveal-section" data-reveal><div className="section-heading"><p className="eyebrow">One platform, three clear roles</p><h3>Every user gets a workspace designed for their job.</h3></div><div className="role-grid">{roleCards.map((role) => <article id={`${role.id}-workspace`} className="role-card reveal-child swell-card" key={role.id}><FeatureIcon name={role.id} /><p className="role-label">{role.label}</p><h4>{role.title}</h4><p>{role.summary}</p><ul>{role.actions.map((action) => <li key={action}>{action}</li>)}</ul></article>)}</div></section>
-      <section className="visual-stories reveal-section" data-reveal><article className="visual-story reveal-child swell-card"><div className="story-image"><img src={verifiedExperts} alt="A diverse team of verified experts collaborates to send trusted support to a store operator" /></div><div className="story-copy"><FeatureIcon name="expert"/><p className="eyebrow">Verified human expertise</p><h3>Answers come from people whose experience has been reviewed.</h3><p>Experts build visible reputation through prompt, helpful answers—not anonymous advice.</p></div></article><article id="solution-archive" className="visual-story reverse reveal-child swell-card"><div className="story-image"><img src={solutionArchive} alt="A store operator discovers an accepted answer in an organized searchable solution library" /></div><div className="story-copy"><span className="feature-icon" aria-hidden="true">⌕</span><p className="eyebrow">Knowledge that stays useful</p><h3>Every accepted answer becomes easier to discover again.</h3><p>Search and category filters turn yesterday’s solutions into today’s fastest fix.</p></div></article></section>
-      <section className="panel workflow-panel reveal-section" data-reveal><div className="section-heading compact"><p className="eyebrow">How support works</p><h3>From problem to permanent solution.</h3></div><div className="workflow-grid">{workflowSteps.map((step) => <article className="workflow-step reveal-child" key={step.title}><strong>{step.title}</strong><p>{step.detail}</p></article>)}</div></section>
-      <footer className="site-footer panel reveal-section" data-reveal>
-        <div className="footer-cta"><div><p className="eyebrow">Support should feel simple</p><h3>Technical help without the intimidation.</h3><p>Join independent store owners and verified experts building a more useful support community.</p></div><button className="primary-button" onClick={() => navigate('/signup')}>Create free account</button></div>
-        <div className="footer-content">
-          <div className="footer-brand"><button className="brand-button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><span className="brand-mark">E</span><span>E-Com Support</span></button><p>Accountable, accessible technical support for independent e-commerce operators.</p><span className="footer-status"><i aria-hidden="true" />Platform operating normally</span></div>
-          <nav className="footer-column" aria-label="Platform"><strong>Platform</strong><a href="#roles">User roles</a><a href="#roles">How it works</a><button onClick={() => navigate('/login')}>Solution archive</button></nav>
-          <nav className="footer-column" aria-label="Account"><strong>Account</strong><button onClick={() => navigate('/signup')}>Create account</button><button onClick={() => navigate('/login')}>Log in</button><button onClick={() => navigate('/signup')}>Apply as expert</button></nav>
-          <nav className="footer-column" aria-label="Trust and support"><strong>Trust & support</strong><a href="#roles">Accessibility</a><a href="#roles">Community guidelines</a><a href="mailto:support@ecomsupport.example">Contact support</a></nav>
-        </div>
-        <div className="footer-bottom"><span>© {new Date().getFullYear()} E-Com Support Hub</span><div><a href="#roles">Privacy</a><a href="#roles">Terms</a><span>WCAG 2.1 AA minded</span></div></div>
-      </footer>
-    </main></div>
+  return <div className="app-shell"><a className="skip-link" href="#main-content">Skip to content</a><AppHeader navigate={navigate}/><main id="main-content">
+    <section className="landing-hero panel"><div className="hero-copy"><p className="eyebrow">Support for independent store owners</p><h2>Real e-commerce problems. Verified people. Clear answers.</h2><p className="hero-text">A support community for independent store owners — built around accountable experts and solutions that stay useful.</p><div className="hero-actions"><button className="primary-button" onClick={() => navigate(session ? `/${session.role}` : '/signup')}>{session ? 'Open my dashboard' : 'Get Help'}</button>{!session && <button className="plain-link" onClick={() => navigate('/login')}>Log in</button>}</div></div></section>
+    <section id="how-it-works" className="section-block"><div className="section-heading"><p className="eyebrow">How it works</p><h3>A clear path from question to proven solution.</h3></div><div className="workflow-grid">{workflowSteps.slice(0,4).map((step) => <article className="workflow-step" key={step.title}><strong>{step.title}</strong><p>{step.detail.replace('Operator', 'A store owner')}</p></article>)}</div></section>
+    <section className="mockup-section section-block"><div className="section-heading"><p className="eyebrow">See the platform in action</p><h3>Simple tools built around getting to an answer.</h3></div><div className="mockup-grid"><article><ProductMockup type="question"/><h4>Ask with the right context</h4><p>A guided form helps you explain the issue clearly from the start.</p></article><article><ProductMockup type="response"/><h4>Hear from verified people</h4><p>Responses show expertise, reputation, and accepted solutions.</p></article><article id="solution-archive"><ProductMockup type="archive"/><h4>Find fixes that already worked</h4><p>Search useful answers by problem, platform, or category.</p></article></div></section>
+    <section className="trust-section panel section-block"><div><p className="eyebrow">Built for dependable support</p><h3>Useful signals, after the value is clear.</h3></div><div className="stat-grid"><article className="stat-card"><strong>24h</strong><span>Unanswered-question escalation target</span></article><article className="stat-card"><strong>Verified</strong><span>Experts reviewed before answering</span></article><article className="stat-card"><strong>Searchable</strong><span>Accepted answers preserved in the archive</span></article></div></section>
+    <section className="give-help-teaser section-block"><div><p className="eyebrow">Know your way around e-commerce?</p><h3>Turn your experience into answers that help store owners move forward.</h3><p>Build reputation, earn points, and create a public record of useful work.</p></div><button className="secondary-button" onClick={() => navigate('/give-help')}>Explore giving help</button></section>
+    <footer className="site-footer simple-footer"><div className="footer-brand"><span className="brand-button"><span className="brand-mark">E</span><span>E-Com Support</span></span><p>Clear, accountable support for independent e-commerce businesses.</p></div><nav aria-label="Footer"><a href="#how-it-works">How It Works</a><a href="#solution-archive">Solution Archive</a><button onClick={() => navigate('/give-help')}>Give Help</button><button onClick={() => navigate('/login')}>Log In</button></nav><span>© {new Date().getFullYear()} E-Com Support Hub</span></footer>
+  </main></div>
 }

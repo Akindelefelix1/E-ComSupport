@@ -1,17 +1,25 @@
 import { useState } from 'react'
 import authVisual from '../assets/auth-support-network.png'
+import { api, normalizeUser } from '../lib/api.js'
 
 export function AuthPage({ mode, onAuthenticate, navigate, notice = '', adminMode = false }) {
   const signingUp = mode === 'signup'
   const [role, setRole] = useState('operator')
-  const submit = (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); const email = data.get('email').toLowerCase(); let accounts = {}; try { accounts = JSON.parse(localStorage.getItem('support-accounts')) || {} } catch { accounts = {} }
-    if (signingUp) { const user = { name: data.get('name'), email, role, verificationStatus: role === 'expert' ? 'pending' : 'not-required' }; localStorage.setItem('support-accounts', JSON.stringify({ ...accounts, [email]: user })); onAuthenticate(user); return }
-    if (adminMode) { onAuthenticate({ name: email.split('@')[0], email, role: 'admin' }); return }
-    onAuthenticate(accounts[email] || { name: email.split('@')[0], email, role: 'operator', verificationStatus: 'not-required' })
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const submit = async (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); setError(''); setLoading(true)
+    try {
+      const result = await api(signingUp ? '/auth/register' : '/auth/login', { method: 'POST', body: JSON.stringify(signingUp ? { name: data.get('name'), email: data.get('email'), password: data.get('password') } : { email: data.get('email'), password: data.get('password') }) })
+      const user = normalizeUser(result.user)
+      if (adminMode && user.role !== 'admin') throw new Error('This account does not have administrator access.')
+      if (signingUp && role === 'expert' && user.role !== 'expert') user.verificationStatus = 'pending'
+      onAuthenticate({ ...user, accessToken: result.accessToken })
+    } catch (requestError) { setError(requestError.message) }
+    finally { setLoading(false) }
   }
   return <div className="auth-shell"><section className="auth-story"><img className="auth-story-image" src={authVisual} alt="A store owner connected to a welcoming network of verified e-commerce support experts"/><div className="auth-story-shade" aria-hidden="true"/><button className="brand-button auth-story-content" onClick={() => navigate('/')}><span className="brand-mark">E</span><span>E-Com Support</span></button><div className="auth-story-content"><p className="eyebrow">{adminMode ? 'Restricted access' : 'Community-powered support'}</p><h1>{adminMode ? 'Administration.' : signingUp ? 'Get the right help, faster.' : 'Welcome back.'}</h1><p>{adminMode ? 'Authorized platform administrators only.' : 'Connect with verified people, track every request, and keep proven answers easy to find.'}</p></div></section>
     <main className="auth-card"><div><p className="eyebrow">{signingUp ? 'Create your account' : 'Secure access'}</p><h2>{adminMode ? 'Admin login' : signingUp ? 'Join E-Com Support' : 'Log in to your account'}</h2><p>{signingUp ? 'Choose what you want to do first. You can change views later.' : 'Enter your account details to continue.'}</p></div>{notice && <p className="auth-notice" role="alert">{notice}</p>}
-      <form onSubmit={submit}>{signingUp && <label>Full name<input name="name" autoComplete="name" required/></label>}<label>Email address<input name="email" type="email" autoComplete="email" required placeholder="you@example.com"/></label><label>Password<input name="password" type="password" autoComplete={signingUp ? 'new-password' : 'current-password'} minLength="8" required/></label>{signingUp && <fieldset><legend>What brings you here?</legend><div className="auth-role-grid two-options">{[['operator','I need help'],['expert','I want to give help']].map(([value,label]) => <label className={role === value ? 'selected' : ''} key={value}><input type="radio" name="role" value={value} checked={role === value} onChange={() => setRole(value)}/><span>{label}</span></label>)}</div></fieldset>}<button className="primary-button" type="submit">{signingUp ? 'Create account' : 'Log in'}</button></form>
+      <form onSubmit={submit}>{signingUp && <label>Full name<input name="name" autoComplete="name" required/></label>}<label>Email address<input name="email" type="email" autoComplete="email" required placeholder="you@example.com"/></label><label>Password<input name="password" type="password" autoComplete={signingUp ? 'new-password' : 'current-password'} minLength="8" required/></label>{signingUp && <fieldset><legend>What brings you here?</legend><div className="auth-role-grid two-options">{[['operator','I need help'],['expert','I want to give help']].map(([value,label]) => <label className={role === value ? 'selected' : ''} key={value}><input type="radio" name="role" value={value} checked={role === value} onChange={() => setRole(value)}/><span>{label}</span></label>)}</div></fieldset>}{error && <p className="auth-notice" role="alert">{error}</p>}<button className="primary-button" type="submit" disabled={loading}>{loading ? 'Please wait…' : signingUp ? 'Create account' : 'Log in'}</button></form>
       {!adminMode && <p className="auth-switch">{signingUp ? 'Already have an account?' : 'New to the platform?'} <button className="text-button" onClick={() => navigate(signingUp ? '/login' : '/signup')}>{signingUp ? 'Log in' : 'Create account'}</button></p>}
     </main></div>
 }

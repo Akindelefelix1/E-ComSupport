@@ -48,3 +48,7 @@ export function getSession() {
 export function normalizeUser(user) {
   return { ...user, role: user.role.toLowerCase(), verificationStatus: user.role === 'EXPERT' ? 'pending' : 'not-required' }
 }
+
+export function nextPaint() {
+  return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+}

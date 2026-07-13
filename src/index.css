@@ -38,6 +38,22 @@
 .action-spinner { width: 34px; height: 34px; border: 3px solid rgba(88,214,199,.2); border-top-color: var(--teal); border-radius: 50%; animation: action-spin .75s linear infinite; }
 @keyframes action-spin { to { transform: rotate(360deg); } }
 
+.operator-question-form { overflow: visible; margin-bottom: clamp(80px, 16vh, 180px); }
+.operator-question-form form { display: grid; gap: 18px; overflow: visible; }
+.operator-question-form form > .primary-button { justify-self: start; margin-top: 12px; }
+.question-card-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 16px; }
+.operator-question-card { display: grid; align-content: start; gap: 12px; min-height: 190px; background: rgba(255,255,255,.025); }
+.operator-question-card h4,.operator-question-card p { margin: 0; }
+.operator-question-card p,.question-card-actions { color: var(--muted); }
+.question-card-actions { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border); }
+.operator-overview-grid .operator-request { position: relative; grid-template-columns: minmax(0,1fr) auto; padding-left: 22px; }
+.operator-overview-grid .operator-request::before { content: ''; position: absolute; top: 15px; bottom: 15px; left: 8px; width: 7px; border-radius: 999px; background: var(--teal); }
+.operator-overview-grid .operator-request:has(.status-badge.critical)::before { background: var(--rose); }
+@media (max-width: 650px) { .operator-overview-grid .operator-request { grid-template-columns: 1fr; } .operator-overview-grid .operator-request .status-badge { grid-column: 1; justify-self: start; } }
+.operator-question-form label:has(.category-select) { position: relative; z-index: 2; }
+.category-select { position: relative; touch-action: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.category-select option { min-height: 36px; padding-block: 8px; }
+
 /* Photographic homepage hero */
 .landing-hero {
   position: relative;

@@ -54,6 +54,30 @@
 .operator-overview-grid .operator-request::before { content: ''; position: absolute; top: 15px; bottom: 15px; left: 8px; width: 7px; border-radius: 999px; background: var(--teal); }
 .operator-overview-grid .operator-request:has(.status-badge.critical)::before { background: var(--rose); }
 @media (max-width: 650px) { .operator-overview-grid .operator-request { grid-template-columns: 1fr; } .operator-overview-grid .operator-request .status-badge { grid-column: 1; justify-self: start; } }
+
+/* Keep overview section titles visually separated from their first content card. */
+.operator-overview-grid > .panel > h4 {
+  margin-bottom: 14px;
+}
+
+.notification-actions,.form-actions,.table-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.queue-filter-bar,.audit-filter-panel,.report-concern{display:flex;gap:16px;align-items:end;justify-content:space-between;margin-bottom:18px;padding:18px}
+.queue-filter-bar label,.audit-filter-panel label{display:grid;gap:6px;min-width:150px;color:var(--muted)}
+.filter-checkbox{display:flex!important;align-items:center;gap:8px;padding-bottom:12px}
+.account-security,.additional-preferences,.draft-list{margin-top:18px;padding:22px}
+.account-security .dashboard-form{margin-top:18px}
+.draft-list .queue-item{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:14px 0;border-top:1px solid var(--border)}
+.report-concern p{margin:5px 0 0;color:var(--muted)}
+.public-profile-preview .public-profile-body{padding-top:22px}
+.public-profile-preview .public-avatar{flex:0 0 78px;margin-top:0}
+.reputation-breakdown{margin-top:18px;padding:24px}
+.reputation-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 22px}
+.reputation-summary article{padding:16px;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.025)}
+.reputation-summary strong,.reputation-summary span{display:block}.reputation-summary span{margin-top:4px;color:var(--muted);font-size:.82rem}
+.reputation-history-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;padding:15px 0;border-top:1px solid var(--border)}
+.reputation-history-row p{margin:4px 0 0;color:var(--muted)}.reputation-history-row>strong{color:var(--teal)}
+@media(max-width:760px){.queue-filter-bar,.audit-filter-panel,.report-concern{align-items:stretch;flex-direction:column}.queue-filter-bar label,.audit-filter-panel label{width:100%}}
+@media(max-width:700px){.reputation-summary{grid-template-columns:1fr 1fr}}
 .operator-profile-card .operator-profile-identity { padding-top: 24px; }
 .operator-profile-card .operator-profile-avatar { margin-top: 0; }
 .admin-activity .activity-timeline article:nth-child(n+6) { display: none; }

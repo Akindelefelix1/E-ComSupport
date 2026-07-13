@@ -1337,6 +1337,25 @@ tbody tr:hover {
 .confirmation-modal p { color: var(--muted); }
 .modal-icon { display: grid; place-items: center; width: 54px; height: 54px; margin-bottom: 20px; border: 1px solid rgba(244,139,162,.3); border-radius: 17px; color: #ffd3dc; background: rgba(244,139,162,.1); font-size: 1.6rem; transform: rotate(45deg); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 26px; }
+.modal-actions > button:not(.primary-button):not(.secondary-button):not(.danger-button) {
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--text-strong);
+  background: rgba(255, 255, 255, 0.04);
+  font: 600 1rem var(--sans);
+  transition: transform .2s ease, border-color .2s ease, background-color .2s ease;
+}
+.modal-actions > button:not(.primary-button):not(.secondary-button):not(.danger-button):hover {
+  transform: translateY(-1px);
+  border-color: var(--teal);
+  background: rgba(88, 214, 199, .08);
+}
+.modal-actions > button:not(.primary-button):not(.secondary-button):not(.danger-button):focus-visible {
+  outline: 3px solid rgba(88, 214, 199, .45);
+  outline-offset: 2px;
+}
 .danger-button { min-height: 48px; padding: 12px 18px; border: 1px solid rgba(244,139,162,.35); border-radius: 999px; color: #fff; background: linear-gradient(135deg, #d95e79, #b83f5c); font: 700 1rem var(--sans); transition: transform .2s ease, box-shadow .2s ease; }
 .danger-button:hover { transform: translateY(-1px); box-shadow: 0 10px 25px rgba(217,94,121,.22); }
 .danger-button:focus-visible { outline: 3px solid rgba(244,139,162,.65); outline-offset: 2px; }

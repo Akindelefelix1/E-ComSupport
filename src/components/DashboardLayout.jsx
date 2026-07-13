@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
+import { ActionLoading } from './ActionLoading.jsx'
 
 const roleLabels = { operator: 'Operator', expert: 'Verified Expert', admin: 'Moderator / Admin' }
 
 export function DashboardLayout({ user, onLogout, onSwitchView, title, subtitle, tabs, activeTab, onTabChange, children }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [logoutOpen, setLogoutOpen] = useState(false)
+  const [actionLoading, setActionLoading] = useState('')
   const cancelButtonRef = useRef(null)
 
   useEffect(() => {
@@ -17,7 +19,19 @@ export function DashboardLayout({ user, onLogout, onSwitchView, title, subtitle,
     return () => document.removeEventListener('keydown', closeOnEscape)
   }, [logoutOpen])
 
+  useEffect(() => {
+    let activeRequests = 0
+    const trackActivity = (event) => {
+      activeRequests = Math.max(0, activeRequests + (event.detail.active ? 1 : -1))
+      if (event.detail.active) setActionLoading(event.detail.message)
+      else if (activeRequests === 0) setActionLoading('')
+    }
+    window.addEventListener('api-activity', trackActivity)
+    return () => window.removeEventListener('api-activity', trackActivity)
+  }, [])
+
   return <div className="dashboard-shell">
+    <ActionLoading message={actionLoading}/>
     <a className="skip-link" href="#dashboard-content">Skip to dashboard content</a>
     <aside className={`dashboard-sidebar ${menuOpen ? 'open' : ''}`}>
       <button className="brand-button" onClick={() => window.location.hash = '/'} aria-label="Go to home"><span className="brand-mark">E</span><span>E-Com Support</span></button>

@@ -50,6 +50,8 @@
 .operator-overview-grid .operator-request::before { content: ''; position: absolute; top: 15px; bottom: 15px; left: 8px; width: 7px; border-radius: 999px; background: var(--teal); }
 .operator-overview-grid .operator-request:has(.status-badge.critical)::before { background: var(--rose); }
 @media (max-width: 650px) { .operator-overview-grid .operator-request { grid-template-columns: 1fr; } .operator-overview-grid .operator-request .status-badge { grid-column: 1; justify-self: start; } }
+.operator-profile-card .operator-profile-identity { padding-top: 24px; }
+.operator-profile-card .operator-profile-avatar { margin-top: 0; }
 .operator-question-form label:has(.category-select) { position: relative; z-index: 2; }
 .category-select { position: relative; touch-action: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 .category-select option { min-height: 36px; padding-block: 8px; }

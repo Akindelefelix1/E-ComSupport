@@ -9,7 +9,7 @@ export function AuthPage({ mode, onAuthenticate, navigate, notice = '', adminMod
   const [loading, setLoading] = useState(false)
   const submit = async (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); setError(''); setLoading(true)
     try {
-      const result = await api(signingUp ? '/auth/register' : '/auth/login', { method: 'POST', body: JSON.stringify(signingUp ? { name: data.get('name'), email: data.get('email'), password: data.get('password') } : { email: data.get('email'), password: data.get('password') }) })
+      const result = await api(signingUp ? '/auth/register' : '/auth/login', { method: 'POST', body: JSON.stringify(signingUp ? { name: data.get('name'), email: data.get('email'), password: data.get('password'), role: role.toUpperCase() } : { email: data.get('email'), password: data.get('password') }) })
       const user = normalizeUser(result.user)
       if (adminMode && user.role !== 'admin') throw new Error('This account does not have administrator access.')
       if (signingUp && role === 'expert' && user.role !== 'expert') user.verificationStatus = 'pending'

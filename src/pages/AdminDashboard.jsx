@@ -1,37 +1,47 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DashboardLayout } from '../components/DashboardLayout.jsx'
 import { FeedbackModal } from '../components/FeedbackModal.jsx'
-import { expertApplications, initialQuestions, moderationQueue, userAccounts } from '../data/platformData.js'
+import { initialQuestions, moderationQueue } from '../data/platformData.js'
+import { api } from '../lib/api.js'
 
 const tabs = [{ id: 'overview', label: 'Overview' }, { id: 'applications', label: 'Expert approvals' }, { id: 'escalations', label: 'Escalations' }, { id: 'moderation', label: 'Moderation' }, { id: 'categories', label: 'Categories' }, { id: 'users', label: 'User accounts' }, { id: 'admins', label: 'Admin team' }]
 const activity = [{ title: 'Question Q-2060 auto-escalated', detail: 'No expert response within the configured SLA.', time: '2 min' }, { title: 'Maya R. approved as expert', detail: 'Checkout specialist added to the verified pool.', time: '18 min' }, { title: 'Content report resolved', detail: 'Duplicate promotional answer was removed.', time: '42 min' }, { title: 'Operator account restored', detail: 'Access was restored after manual review.', time: '1 hr' }]
 
 export function AdminDashboard({ user, onLogout }) {
   const [tab, setTab] = useState('overview')
-  const [apps, setApps] = useState(expertApplications)
+  const [apps, setApps] = useState([])
   const [items, setItems] = useState(moderationQueue)
-  const [accounts, setAccounts] = useState(userAccounts)
+  const [accounts, setAccounts] = useState([])
   const [hours, setHours] = useState(24)
   const [feedback, setFeedback] = useState(null)
   const [userSearch, setUserSearch] = useState('')
-  const [categories, setCategories] = useState([{ id: 1, name: 'Checkout', description: 'Cart, checkout flow, shipping, and order completion.', status: 'Active', questions: 38 }, { id: 2, name: 'Payments', description: 'Payment gateways, failed charges, refunds, and payouts.', status: 'Active', questions: 27 }, { id: 3, name: 'Theme / Design', description: 'Storefront layouts, responsive design, and visual issues.', status: 'Active', questions: 22 }, { id: 4, name: 'Apps', description: 'Third-party applications, integrations, and conflicts.', status: 'Active', questions: 13 }, { id: 5, name: 'Other', description: 'Issues that do not match an existing support category.', status: 'Active', questions: 6 }])
+  const [categories, setCategories] = useState([])
   const [editingCategory, setEditingCategory] = useState(null)
   const [createCategoryOpen, setCreateCategoryOpen] = useState(false)
   const [roleFilter, setRoleFilter] = useState('All roles')
   const [statusFilter, setStatusFilter] = useState('All statuses')
   const [addAdminOpen, setAddAdminOpen] = useState(false)
-  const [adminTeam, setAdminTeam] = useState([{ id: 1, name: user.name, email: user.email, access: 'Super Admin', status: 'Active', added: 'Platform owner' }, { id: 2, name: 'Jordan Admin', email: 'jordan@ecomsupport.example', access: 'Moderator', status: 'Active', added: '12 Jun 2026' }])
+  const [adminTeam, setAdminTeam] = useState([])
+  const load = () => Promise.all([api('/admin/applications'), api('/admin/users'), api('/categories'), api('/admin/settings/escalation')]).then(([applications, users, categoryItems, setting]) => {
+    setApps(applications.map(item => ({ ...item, name: item.user.name, score: item.user.reputation, status: item.status === 'PENDING' ? 'Pending review' : item.status.charAt(0) + item.status.slice(1).toLowerCase() })))
+    const mapped = users.map(item => ({ ...item, role: item.role === 'EXPERT' ? 'Verified Expert' : item.role === 'ADMIN' ? 'Moderator' : 'Operator', status: item.isActive ? 'Active' : 'Suspended', lastSeen: new Date(item.lastSeenAt).toLocaleString() }))
+    setAccounts(mapped)
+    setAdminTeam(mapped.filter(item => item.role === 'Moderator').map(item => ({ ...item, access: item.email === user.email ? 'Super Admin' : 'Admin', added: new Date(item.createdAt).toLocaleDateString() })))
+    setCategories(categoryItems.map(item => ({ ...item, status: item.isActive ? 'Active' : 'Inactive' })))
+    setHours(setting.hours)
+  })
+  useEffect(() => { load().catch(error => setFeedback({ title: 'Admin data could not be loaded', message: error.message })) }, [])
   const pendingApps = apps.filter((item) => item.status === 'Pending review').length
   const escalated = initialQuestions.filter((item) => item.escalated || item.responses === 0)
 
-  const review = (name, status) => { setApps((current) => current.map((item) => item.name === name ? { ...item, status } : item)); setFeedback({ title: `Application ${status.toLowerCase()}`, message: `${name} has been ${status.toLowerCase()} and will be notified of this decision.` }) }
-  const toggleAccount = (name) => { const account = accounts.find((item) => item.name === name); const nextStatus = account.status === 'Suspended' ? 'Active' : 'Suspended'; setAccounts((current) => current.map((item) => item.name === name ? { ...item, status: nextStatus } : item)); setFeedback({ title: `Account ${nextStatus === 'Active' ? 'restored' : 'suspended'}`, message: `${name}'s account is now ${nextStatus.toLowerCase()}.` }) }
+  const review = async (name, status) => { const application = apps.find(item => item.name === name); try { await api(`/admin/applications/${application.id}`, { method: 'PATCH', body: JSON.stringify({ status: status.toUpperCase() }) }); await load(); setFeedback({ title: `Application ${status.toLowerCase()}`, message: `${name} has been ${status.toLowerCase()}.` }) } catch (error) { setFeedback({ title: 'Review failed', message: error.message }) } }
+  const toggleAccount = async (name) => { const account = accounts.find((item) => item.name === name); const nextStatus = account.status === 'Suspended' ? 'Active' : 'Suspended'; try { await api(`/admin/users/${account.id}/status`, { method: 'PATCH', body: JSON.stringify({ isActive: nextStatus === 'Active' }) }); await load(); setFeedback({ title: `Account ${nextStatus === 'Active' ? 'restored' : 'suspended'}`, message: `${name}'s account is now ${nextStatus.toLowerCase()}.` }) } catch (error) { setFeedback({ title: 'Account update failed', message: error.message }) } }
   const resolveItem = (item) => { setItems((current) => current.filter((entry) => entry.id !== item.id)); setFeedback({ title: item.id.startsWith('MOD') ? 'Content removed' : 'Queue item resolved', message: 'The moderation queue and audit activity have been updated.' }) }
-  const createCategory = (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); const name = data.get('name').trim(); if (categories.some((item) => item.name.toLowerCase() === name.toLowerCase())) { setFeedback({ title: 'Category already exists', message: 'Choose a different category name or update the existing category.' }); return } setCategories((current) => [...current, { id: Date.now(), name, description: data.get('description').trim(), status: 'Active', questions: 0 }]); setCreateCategoryOpen(false); setFeedback({ title: 'Category created', message: `${name} is now available for new support questions.` }) }
-  const toggleCategory = (id) => setCategories((current) => current.map((item) => item.id === id ? { ...item, status: item.status === 'Active' ? 'Inactive' : 'Active' } : item))
-  const removeCategory = (category) => { if (category.questions > 0) { setFeedback({ title: 'Category cannot be removed', message: `${category.name} has existing questions. Set it to inactive instead to preserve archived content.` }); return } setCategories((current) => current.filter((item) => item.id !== category.id)); setFeedback({ title: 'Category removed', message: `${category.name} was removed from the support form.` }) }
-  const saveCategoryEdit = (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); const name = data.get('name').trim(); if (categories.some((item) => item.id !== editingCategory.id && item.name.toLowerCase() === name.toLowerCase())) { setFeedback({ title: 'Category name already exists', message: 'Choose a unique name before saving this category.' }); return } setCategories((current) => current.map((item) => item.id === editingCategory.id ? { ...item, name, description: data.get('description').trim() } : item)); setEditingCategory(null); setFeedback({ title: 'Category updated', message: `${name} and its description were updated successfully.` }) }
-  const addAdmin = (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); const email = data.get('email').trim(); if (adminTeam.some((item) => item.email.toLowerCase() === email.toLowerCase())) { setFeedback({ title: 'Admin already exists', message: 'This email address already belongs to an admin team member.' }); return } const name = data.get('name').trim(); setAdminTeam((current) => [...current, { id: Date.now(), name, email, access: data.get('access'), status: 'Invitation sent', added: 'Just now' }]); setAddAdminOpen(false); setFeedback({ title: 'Admin invitation created', message: `${name} will receive instructions to activate their ${data.get('access')} account.` }) }
+  const createCategory = async (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); try { await api('/categories', { method: 'POST', body: JSON.stringify({ name: data.get('name').trim(), description: data.get('description').trim() }) }); await load(); setCreateCategoryOpen(false); setFeedback({ title: 'Category created', message: 'The category is now available.' }) } catch (error) { setFeedback({ title: 'Category could not be created', message: error.message }) } }
+  const toggleCategory = async (id) => { const category = categories.find(item => item.id === id); await api(`/categories/${id}`, { method: 'PATCH', body: JSON.stringify({ name: category.name, description: category.description, isActive: category.status !== 'Active' }) }); await load() }
+  const removeCategory = async (category) => { try { await api(`/categories/${category.id}`, { method: 'DELETE' }); await load(); setFeedback({ title: 'Category removed', message: `${category.name} was removed.` }) } catch (error) { setFeedback({ title: 'Category cannot be removed', message: error.message }) } }
+  const saveCategoryEdit = async (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); try { await api(`/categories/${editingCategory.id}`, { method: 'PATCH', body: JSON.stringify({ name: data.get('name').trim(), description: data.get('description').trim(), isActive: editingCategory.status === 'Active' }) }); await load(); setEditingCategory(null); setFeedback({ title: 'Category updated', message: 'The category was updated successfully.' }) } catch (error) { setFeedback({ title: 'Category update failed', message: error.message }) } }
+  const addAdmin = async (event) => { event.preventDefault(); const data = new FormData(event.currentTarget); const password = window.prompt('Set a temporary password (at least 8 characters).'); if (!password) return; try { await api('/admin/users/admin', { method: 'POST', body: JSON.stringify({ name: data.get('name').trim(), email: data.get('email').trim(), password }) }); await load(); setAddAdminOpen(false); setFeedback({ title: 'Administrator created', message: 'The new administrator can log in with the temporary password.' }) } catch (error) { setFeedback({ title: 'Administrator could not be created', message: error.message }) } }
 
   return <DashboardLayout user={user} onLogout={onLogout} title={tab === 'overview' ? 'Operations overview' : tabs.find((item) => item.id === tab).label} subtitle="Keep support responsive, safe, and accountable." tabs={tabs} activeTab={tab} onTabChange={setTab}>
     {tab === 'overview' && <>

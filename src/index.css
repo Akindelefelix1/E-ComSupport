@@ -1344,7 +1344,8 @@ tbody tr:hover {
 
 /* Shared confirmation dialog */
 .modal-backdrop { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(2, 7, 18, .76); backdrop-filter: blur(8px); animation: modal-fade .25s ease both; }
-.confirmation-modal { width: min(480px, 100%); padding: clamp(24px, 4vw, 36px); border: 1px solid var(--border-strong); border-radius: 24px; background: linear-gradient(160deg, #141e35, #0b1222); box-shadow: 0 30px 90px rgba(0, 0, 0, .55); animation: modal-enter .35s cubic-bezier(.2,.8,.2,1) both; }
+.confirmation-modal { width: min(480px, 100%); max-height: calc(100dvh - 40px); overflow-y: auto; overscroll-behavior: contain; padding: clamp(24px, 4vw, 36px); border: 1px solid var(--border-strong); border-radius: 24px; background: linear-gradient(160deg, #141e35, #0b1222); box-shadow: 0 30px 90px rgba(0, 0, 0, .55); animation: modal-enter .35s cubic-bezier(.2,.8,.2,1) both; }
+.confirmation-modal::-webkit-scrollbar{width:8px}.confirmation-modal::-webkit-scrollbar-thumb{border-radius:999px;background:rgba(148,163,184,.35)}.confirmation-modal::-webkit-scrollbar-track{margin:18px;background:transparent}
 .confirmation-modal h2 { margin: 4px 0 10px; color: var(--text-strong); font: 700 clamp(1.55rem, 3vw, 2rem)/1.12 var(--heading); }
 .confirmation-modal p { color: var(--muted); }
 .modal-icon { display: grid; place-items: center; width: 54px; height: 54px; margin-bottom: 20px; border: 1px solid rgba(244,139,162,.3); border-radius: 17px; color: #ffd3dc; background: rgba(244,139,162,.1); font-size: 1.6rem; transform: rotate(45deg); }

@@ -76,8 +76,16 @@
 .reputation-summary strong,.reputation-summary span{display:block}.reputation-summary span{margin-top:4px;color:var(--muted);font-size:.82rem}
 .reputation-history-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;padding:15px 0;border-top:1px solid var(--border)}
 .reputation-history-row p{margin:4px 0 0;color:var(--muted)}.reputation-history-row>strong{color:var(--teal)}
+.pagination{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+.pagination>span{min-width:110px;padding:10px 14px;border:1px solid var(--border);border-radius:999px;color:var(--muted);background:rgba(255,255,255,.025);font-size:.86rem;font-weight:600;text-align:center}
+.pagination>button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:112px;min-height:46px;padding:11px 18px;border:1px solid var(--border-strong);border-radius:999px;color:var(--text-strong);background:rgba(255,255,255,.04);font:700 .92rem var(--sans);transition:transform .2s ease,border-color .2s ease,background-color .2s ease,box-shadow .2s ease}
+.pagination>button:first-child::before{content:'←';font-size:1.05rem}.pagination>button:last-child::after{content:'→';font-size:1.05rem}
+.pagination>button:not(:disabled):hover{transform:translateY(-1px);border-color:var(--teal);background:rgba(88,214,199,.09);box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.pagination>button:focus-visible{outline:3px solid rgba(88,214,199,.45);outline-offset:2px}
+.pagination>button:disabled{cursor:not-allowed;opacity:.42;color:var(--muted);background:rgba(255,255,255,.02)}
 @media(max-width:760px){.queue-filter-bar,.audit-filter-panel,.report-concern{align-items:stretch;flex-direction:column}.queue-filter-bar label,.audit-filter-panel label{width:100%}}
 @media(max-width:700px){.reputation-summary{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.pagination{display:grid;grid-template-columns:1fr 1fr}.pagination>span{grid-column:1/-1;grid-row:1}.pagination>button{min-width:0;width:100%}}
 .operator-profile-card .operator-profile-identity { padding-top: 24px; }
 .operator-profile-card .operator-profile-avatar { margin-top: 0; }
 .admin-activity .activity-timeline article:nth-child(n+6) { display: none; }
@@ -1336,6 +1344,7 @@ tbody tr:hover {
 .confirmation-modal h2 { margin: 4px 0 10px; color: var(--text-strong); font: 700 clamp(1.55rem, 3vw, 2rem)/1.12 var(--heading); }
 .confirmation-modal p { color: var(--muted); }
 .modal-icon { display: grid; place-items: center; width: 54px; height: 54px; margin-bottom: 20px; border: 1px solid rgba(244,139,162,.3); border-radius: 17px; color: #ffd3dc; background: rgba(244,139,162,.1); font-size: 1.6rem; transform: rotate(45deg); }
+.danger-confirmation-icon{transform:none;font-weight:800}
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 26px; }
 .modal-actions > button:not(.primary-button):not(.secondary-button):not(.danger-button) {
   min-height: 48px;
